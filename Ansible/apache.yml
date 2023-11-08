@@ -4,5 +4,35 @@
   remote_user: ec2-user
   gather_facts: true
   vars:
-    ansible_ssh_private_key_file: "/etc/ansible/euran-jenkins.pem"  
+    ansible_ssh_private_key_file: "/etc/ansible/khal-jenkins.pem"  
     ansible_ssh_user: "ec2-user"
+  tasks:
+  - name: "Install httpd and php packages"
+    package:
+      name: 
+      - "httpd"
+      - "php"
+      state: present
+
+  - name: "Copy code from Github"
+    get_url:
+      url: https://github.com/KhaledSaiidi/Devops_on_AWS_AutomatedInfraDeploy/Ansible/index.php
+      dest: "/var/www/html/index.php"
+
+  - name: "Start httpd Service"
+    service:
+      name: httpd
+      state: present
+  
+  - name: Yum install packages"
+    yum: name={{item}} state= latest
+    with_items:
+      - wget
+  
+  - name: terraform install
+    unarchive:
+      src: https://releases.hashicorp.com/terraform/0.9.1/terraform_0.9.1_linux_amd64.zip
+      dest: /usr/bin
+      remote_src: True
+
+  
